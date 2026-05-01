@@ -96,3 +96,19 @@ export interface ValidateResult {
   status: 'valid';
   would_send: PlaceOrderRequest;
 }
+
+export interface QuoteResult {
+  id: string;
+  from_currency: string;
+  to_currency: string;
+  from_amount: string;
+  to_amount: string;
+  rate: string;
+  expires: string;
+  estimated_slippage_value?: string;
+  estimated_slippage_level?: string;
+}
+
+export interface QuoteExecuteResult {
+  oid: string;
+}
