@@ -29,7 +29,8 @@ const program = new Command('bitso')
     '  Use --api-secret-stdin to keep secrets out of process listings.\n\n' +
     'Documentation: https://github.com/sambitcoin/bitso-cli'
   )
-  .version('0.1.0', '-V, --version');
+  .version('0.1.0', '-V, --version')
+  .option('--stage', 'Use Bitso staging environment (https://stage.bitso.com).');
 
 registerTickerCommand(program);
 registerOrderBookCommand(program);
