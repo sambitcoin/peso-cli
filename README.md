@@ -1,7 +1,13 @@
+
 # bitso-cli
 
-AI-native trading CLI for [Bitso](https://bitso.com) — LATAM's largest crypto exchange.  
-Built for agents. Human-friendly when you want it to be.
+AI-native trading CLI for Bitso (crypto, FX).
+
+Open-source, agent-first command-line tool for investing and trading.
+- Wraps Bitso’s direct API integrations (prices, balances, books, conversions, orders)  
+- Built for AI agents (Claude, OpenClaw), you can use it simply with a simple prompt in OpenClaw or Claude "check my balance at Bitso"
+- Designed as a skill-based system (target: 10+ core capabilities)  
+
 
 ## Quick Start
 
