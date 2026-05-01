@@ -61,7 +61,7 @@ export function registerQuoteCommand(program: Command): void {
     .option('--api-key <key>', 'Bitso API key.')
     .option('--api-secret-stdin', 'Read API secret from stdin.')
     .option('--api-secret-file <path>', 'Path to file containing the API secret.')
-    .option('-o, --output <format>', 'Output format: json (default) or table.', 'json')
+    .option('-o, --output <format>', 'Output format: table (default) or json.', 'table')
     .option('--api-url <url>', 'Bitso API base URL (for sandbox testing).', 'https://api.bitso.com')
     .action(async (opts: CommonOpts & {
       from: string;
@@ -174,7 +174,7 @@ export function registerQuoteCommand(program: Command): void {
     .option('--api-key <key>', 'Bitso API key.')
     .option('--api-secret-stdin', 'Read API secret from stdin.')
     .option('--api-secret-file <path>', 'Path to file containing the API secret.')
-    .option('-o, --output <format>', 'Output format: json (default) or table.', 'json')
+    .option('-o, --output <format>', 'Output format: table (default) or json.', 'table')
     .option('--api-url <url>', 'Bitso API base URL (for sandbox testing).', 'https://api.bitso.com')
     .action(async (quoteId: string, opts: CommonOpts, cmd: Command) => {
       const isJson = opts.output.toLowerCase() === 'json';
