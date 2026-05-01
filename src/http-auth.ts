@@ -90,6 +90,30 @@ export class AuthenticatedHttpClient {
     return unwrapEnvelope(response);
   }
 
+  async signedPut(apiPath: string, bodyObj: Record<string, unknown> = {}): Promise<Record<string, unknown>> {
+    const bodyString = JSON.stringify(bodyObj);
+    const nonce = Date.now();
+    const authHeader = this.signer.sign(this.apiKey, nonce, 'PUT', apiPath, bodyString);
+
+    let response: Response;
+    try {
+      response = await fetch(`${this.baseUrl}${apiPath}`, {
+        method: 'PUT',
+        signal: AbortSignal.timeout(30_000),
+        headers: {
+          'Authorization': authHeader,
+          'Content-Type': 'application/json',
+          'User-Agent': 'bitso-cli/0.1.0',
+        },
+        body: bodyString,
+      });
+    } catch (err) {
+      throw new BitsoApiError(mapBitsoError(null, (err as Error).message, 0));
+    }
+
+    return unwrapEnvelope(response);
+  }
+
   destroySigner(): void {
     this.signer.destroy();
   }

@@ -5,6 +5,7 @@ import { registerOrderBookCommand } from './commands/orderbook.js';
 import { registerBalanceCommand } from './commands/balance.js';
 import { registerOrderCommand } from './commands/order.js';
 import { registerAuthCommand } from './commands/auth.js';
+import { registerQuoteCommand } from './commands/quote.js';
 
 const program = new Command('bitso')
   .description(
@@ -37,5 +38,6 @@ registerOrderBookCommand(program);
 registerBalanceCommand(program);
 registerOrderCommand(program);
 registerAuthCommand(program);
+registerQuoteCommand(program);
 
 program.parse(process.argv);
