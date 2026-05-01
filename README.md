@@ -8,6 +8,7 @@ Open-source, agent-first command-line tool for investing and trading.
 - Built for AI agents (Claude, OpenClaw), you can use it simply with a simple prompt in OpenClaw or Claude "check my balance at Bitso"
 - Designed as a skill-based system (target: 10+ core capabilities)  
 
+bitso-cli is an independently developed, open-source tool. It is **not affiliated with, endorsed by, or sponsored by** Bitso
 
 ## Quick Start
 
@@ -170,7 +171,7 @@ Public commands never return `auth` errors. If a public command returns `auth`, 
 
 ## Disclaimer
 
-bitso-cli is an independently developed, open-source tool. It is **not affiliated with, endorsed by, or sponsored by** Bitso (Servicios Bitso México, S.A. de C.V.), which is regulated by the CNBV in Mexico under the Fintech Law.
+bitso-cli is an independently developed, open-source tool. It is **not affiliated with, endorsed by, or sponsored by** Bitso
 
 This tool provides a command-line interface to Bitso's public REST API v3. You are responsible for:
 - **Safeguarding your API keys.** Never share them. Never commit `config.toml` to git.
