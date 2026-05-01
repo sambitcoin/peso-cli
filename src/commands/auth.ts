@@ -27,7 +27,7 @@ export function registerAuthCommand(program: Command): void {
     .option('--api-secret-stdin', 'Read API secret from stdin (recommended).')
     .option('--api-secret-file <path>', 'Read API secret from a file.')
     .option('--api-secret <secret>', '(INSECURE) API secret as a direct argument.', '')
-    .option('-o, --output <format>', 'Output format: json (default) or table.', 'json')
+    .option('-o, --output <format>', 'Output format: table (default) or json.', 'table')
     .action(async (opts: {
       apiKey: string;
       apiSecretStdin?: boolean;
@@ -78,7 +78,7 @@ export function registerAuthCommand(program: Command): void {
     .option('--api-key <key>', 'Bitso API key (overrides config).')
     .option('--api-secret-stdin', 'Read API secret from stdin.')
     .option('--api-secret-file <path>', 'Path to file containing the API secret.')
-    .option('-o, --output <format>', 'Output format: json (default) or table.', 'json')
+    .option('-o, --output <format>', 'Output format: table (default) or json.', 'table')
     .option('--api-url <url>', 'Bitso API base URL (for sandbox testing).', 'https://api.bitso.com')
     .action(async (opts: {
       apiKey?: string;

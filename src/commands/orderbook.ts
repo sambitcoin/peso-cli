@@ -8,7 +8,7 @@ export function registerOrderBookCommand(program: Command): void {
     .command('orderbook <book>')
     .description('View the order book for a given Bitso book (bids and asks).')
     .option('--depth <n>', 'Number of price levels to show (per side). Shows all if not set.', '-1')
-    .option('-o, --output <format>', 'Output format: json (default) or table.', 'json')
+    .option('-o, --output <format>', 'Output format: table (default) or json.', 'table')
     .option('--api-url <url>', 'Bitso API base URL (for sandbox testing).', 'https://api.bitso.com')
     .action(async (book: string, opts: { depth: string; output: string; apiUrl: string }, cmd: Command) => {
       const isJson = opts.output.toLowerCase() === 'json';
