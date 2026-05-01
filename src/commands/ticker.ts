@@ -1,4 +1,4 @@
-import type { Command } from 'commander';
+import { type Command } from 'commander';
 import { PublicHttpClient, BitsoApiError } from '../http-public.js';
 import { resolveBook, FX_BOOK } from '../book-resolver.js';
 import { JsonOutput, TableOutput, printError } from '../output.js';
@@ -11,9 +11,11 @@ export function registerTickerCommand(program: Command): void {
     .option('--quote <currency>', 'Output currency: usd (default) or mxn.', 'usd')
     .option('-o, --output <format>', 'Output format: table (default) or json.', 'table')
     .option('--api-url <url>', 'Bitso API base URL (for sandbox testing).', 'https://api.bitso.com')
-    .action(async (coin: string, opts: { quote: string; output: string; apiUrl: string }) => {
+    .action(async (coin: string, opts: { quote: string; output: string; apiUrl: string }, cmd: Command) => {
       const isJson = opts.output.toLowerCase() === 'json';
-      const client = new PublicHttpClient(opts.apiUrl);
+      const { stage } = cmd.optsWithGlobals<{ stage?: boolean }>();
+      const apiUrl = stage ? 'https://stage.bitso.com' : opts.apiUrl;
+      const client = new PublicHttpClient(apiUrl);
 
       try {
         let book: string;

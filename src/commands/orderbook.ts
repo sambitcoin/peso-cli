@@ -1,4 +1,4 @@
-import type { Command } from 'commander';
+import { type Command } from 'commander';
 import { PublicHttpClient, BitsoApiError } from '../http-public.js';
 import { JsonOutput, TableOutput, printError } from '../output.js';
 import type { OrderBookResult, OrderBookEntry } from '../types.js';
@@ -10,9 +10,11 @@ export function registerOrderBookCommand(program: Command): void {
     .option('--depth <n>', 'Number of price levels to show (per side). Shows all if not set.', '-1')
     .option('-o, --output <format>', 'Output format: json (default) or table.', 'json')
     .option('--api-url <url>', 'Bitso API base URL (for sandbox testing).', 'https://api.bitso.com')
-    .action(async (book: string, opts: { depth: string; output: string; apiUrl: string }) => {
+    .action(async (book: string, opts: { depth: string; output: string; apiUrl: string }, cmd: Command) => {
       const isJson = opts.output.toLowerCase() === 'json';
-      const client = new PublicHttpClient(opts.apiUrl);
+      const { stage } = cmd.optsWithGlobals<{ stage?: boolean }>();
+      const apiUrl = stage ? 'https://stage.bitso.com' : opts.apiUrl;
+      const client = new PublicHttpClient(apiUrl);
 
       try {
         const data = await client.get('/api/v3/order_book', { book, aggregate: 'true' });

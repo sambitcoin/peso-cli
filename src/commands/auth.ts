@@ -1,4 +1,4 @@
-import type { Command } from 'commander';
+import { type Command } from 'commander';
 import { AuthenticatedHttpClient } from '../http-auth.js';
 import { BitsoApiError } from '../http-public.js';
 import {
@@ -86,8 +86,10 @@ export function registerAuthCommand(program: Command): void {
       apiSecretFile?: string;
       output: string;
       apiUrl: string;
-    }) => {
+    }, cmd: Command) => {
       const isJson = opts.output.toLowerCase() === 'json';
+      const { stage } = cmd.optsWithGlobals<{ stage?: boolean }>();
+      const apiUrl = stage ? 'https://stage.bitso.com' : opts.apiUrl;
 
       try {
         let secretBuf: Buffer | undefined;
@@ -98,7 +100,7 @@ export function registerAuthCommand(program: Command): void {
         }
 
         const credentials = loadCredentials(opts.apiKey || undefined, secretBuf);
-        const client = new AuthenticatedHttpClient(credentials, opts.apiUrl);
+        const client = new AuthenticatedHttpClient(credentials, apiUrl);
 
         await client.signedGet('/api/v3/balance');
         client.destroySigner();

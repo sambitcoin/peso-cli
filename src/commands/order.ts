@@ -1,4 +1,4 @@
-import type { Command } from 'commander';
+import { type Command } from 'commander';
 import { AuthenticatedHttpClient } from '../http-auth.js';
 import { BitsoApiError } from '../http-public.js';
 import { loadCredentials, CredentialMissingError, readSecretFromStdin, readSecretFromFile } from '../credential-store.js';
@@ -94,8 +94,10 @@ export function registerOrderCommand(program: Command): void {
     .action(async (book: string, opts: CommonOpts & {
       type: string; major?: string; minor?: string; price?: string;
       validate?: boolean; clientId?: string;
-    }) => {
+    }, cmd: Command) => {
       const isJson = opts.output.toLowerCase() === 'json';
+      const { stage } = cmd.optsWithGlobals<{ stage?: boolean }>();
+      const apiUrl = stage ? 'https://stage.bitso.com' : opts.apiUrl;
 
       const validationError = validateOrderParams(book, opts.type, opts.major, opts.minor, opts.price);
       if (validationError) {
@@ -121,7 +123,7 @@ export function registerOrderCommand(program: Command): void {
 
       try {
         const credentials = await loadCreds(opts);
-        const client = new AuthenticatedHttpClient(credentials, opts.apiUrl);
+        const client = new AuthenticatedHttpClient(credentials, apiUrl);
 
         const bodyObj: Record<string, unknown> = {
           book: request.book,
@@ -181,8 +183,10 @@ export function registerOrderCommand(program: Command): void {
     .action(async (book: string, opts: CommonOpts & {
       type: string; major?: string; minor?: string; price?: string;
       validate?: boolean; clientId?: string;
-    }) => {
+    }, cmd: Command) => {
       const isJson = opts.output.toLowerCase() === 'json';
+      const { stage } = cmd.optsWithGlobals<{ stage?: boolean }>();
+      const apiUrl = stage ? 'https://stage.bitso.com' : opts.apiUrl;
 
       const validationError = validateOrderParams(book, opts.type, opts.major, opts.minor, opts.price);
       if (validationError) {
@@ -208,7 +212,7 @@ export function registerOrderCommand(program: Command): void {
 
       try {
         const credentials = await loadCreds(opts);
-        const client = new AuthenticatedHttpClient(credentials, opts.apiUrl);
+        const client = new AuthenticatedHttpClient(credentials, apiUrl);
 
         const bodyObj: Record<string, unknown> = {
           book: request.book,
@@ -260,12 +264,14 @@ export function registerOrderCommand(program: Command): void {
     .option('--api-secret-file <path>', 'Path to file containing the API secret.')
     .option('-o, --output <format>', 'Output format: json (default) or table.', 'json')
     .option('--api-url <url>', 'Bitso API base URL (for sandbox testing).', 'https://api.bitso.com')
-    .action(async (opts: CommonOpts & { book?: string }) => {
+    .action(async (opts: CommonOpts & { book?: string }, cmd: Command) => {
       const isJson = opts.output.toLowerCase() === 'json';
+      const { stage } = cmd.optsWithGlobals<{ stage?: boolean }>();
+      const apiUrl = stage ? 'https://stage.bitso.com' : opts.apiUrl;
 
       try {
         const credentials = await loadCreds(opts);
-        const client = new AuthenticatedHttpClient(credentials, opts.apiUrl);
+        const client = new AuthenticatedHttpClient(credentials, apiUrl);
 
         const params: Record<string, string> = {};
         if (opts.book) params['book'] = opts.book;
