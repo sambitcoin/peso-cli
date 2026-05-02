@@ -7,6 +7,11 @@ function pad(s: string, n: number): string {
   return s.substring(0, n).padEnd(n);
 }
 
+function filterBalances(r: BrokerBalanceResult, asset: string | undefined): BrokerBalanceResult {
+  if (r.status !== 'ok' || asset == null) return r;
+  return { ...r, balances: r.balances.filter(b => b.currency.toLowerCase() === asset) };
+}
+
 function renderBrokerTable(r: BrokerBalanceResult): string {
   const lines: string[] = [];
   lines.push(`  ${r.broker.toUpperCase()}`);
@@ -26,14 +31,14 @@ function renderBrokerTable(r: BrokerBalanceResult): string {
 
 export function registerAggregateBalanceCommand(program: Command): void {
   program
-    .command('balance')
-    .description('Show aggregated account balances across all brokers (Bitso, GBM).')
+    .command('balance [asset]')
+    .description('Show aggregated account balances across all brokers (Bitso, GBM). Optionally filter by asset (e.g. btc, mxn).')
     .option('--bitso-api-key <key>', 'Bitso API key.')
     .option('--bitso-api-secret-stdin', 'Read Bitso API secret from stdin.')
     .option('--bitso-api-secret-file <path>', 'Path to file containing the Bitso API secret.')
     .option('--bitso-api-url <url>', 'Bitso API base URL.', 'https://api.bitso.com')
     .option('-o, --output <format>', 'Output format: table (default) or json.', 'table')
-    .action(async (opts: {
+    .action(async (asset: string | undefined, opts: {
       bitsoApiKey?: string;
       bitsoApiSecretStdin?: boolean;
       bitsoApiSecretFile?: string;
@@ -41,6 +46,7 @@ export function registerAggregateBalanceCommand(program: Command): void {
       output: string;
     }) => {
       const isJson = opts.output.toLowerCase() === 'json';
+      const assetFilter = asset?.toLowerCase();
 
       const [bitso, gbm] = await Promise.all([
         fetchBitsoBalance({
@@ -52,10 +58,10 @@ export function registerAggregateBalanceCommand(program: Command): void {
         fetchGbmBalance(),
       ]);
 
-      const results = [bitso, gbm];
+      const results = [bitso, gbm].map(r => filterBalances(r, assetFilter));
 
       if (isJson) {
-        console.log(JsonOutput.success({ brokers: results }));
+        console.log(JsonOutput.success({ asset: assetFilter ?? null, brokers: results }));
       } else {
         console.log(results.map(renderBrokerTable).join('\n\n') + '\n');
       }
