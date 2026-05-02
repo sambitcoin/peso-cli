@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "bun build src/index.ts --compile --outfile dist/bitso",
+    "build": "bun build src/index.ts --compile --outfile dist/peso",
     "dev": "bun run src/index.ts",
     "typecheck": "tsc --noEmit"
   },

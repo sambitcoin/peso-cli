@@ -1,4 +1,4 @@
-export type ErrorCategory = 'auth' | 'rate_limit' | 'validation' | 'api' | 'network';
+export type ErrorCategory = 'auth' | 'rate_limit' | 'validation' | 'api' | 'network' | 'not_implemented';
 
 export interface BitsoError {
   category: ErrorCategory;
