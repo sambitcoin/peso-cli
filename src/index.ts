@@ -2,17 +2,21 @@
 import { Command } from 'commander';
 import { registerBitsoCommand } from './brokers/bitso.js';
 import { registerGbmCommand } from './brokers/gbm.js';
+import { registerAggregateBalanceCommand } from './commands/aggregate-balance.js';
 
 const program = new Command('peso')
   .description(
     'peso — multi-broker trading CLI.\n\n' +
-    'Brokers:\n' +
+    'Top-level commands:\n' +
+    '  peso balance           Aggregated balances from all brokers\n\n' +
+    'Broker commands:\n' +
     '  peso bitso [command]   Trade on Bitso (LATAM crypto exchange)\n' +
     '  peso gbm   [command]   Trade on GBM (coming soon)\n\n' +
     'Run `peso <broker> --help` for broker-specific commands.'
   )
   .version('0.1.0', '-V, --version');
 
+registerAggregateBalanceCommand(program);
 registerBitsoCommand(program);
 registerGbmCommand(program);
 
