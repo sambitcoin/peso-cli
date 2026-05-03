@@ -2,19 +2,19 @@
 
 **The agent-native command-line interface for Mexico's investment ecosystem.**
 
-peso-cli is an open-source CLI built for AI agents (Claude, OpenClaw, and others) to interact with Mexican investment platforms through a single, stable, machine-readable interface. One command surface, one JSON contract, every major Mexican investment service.
+peso-cli is an open-source CLI built for AI agents (OpenClaw, and others) to interact with Mexican investment apps through a single, stable, machine-readable interface. One set of comands, one data format, every major Mexican investment service.
 
-> Roadmap: **Bitso** (crypto, FX) → **GBM** (equities, ETFs, fixed income) → broader Mexican fintech.
+> Roadmap: **Bitso** (crypto, FX) → **GBM** (equities, ETFs, Cash) → broader Mexican fintech.
 
 peso-cli is an independently developed, open-source project. It is **not affiliated with, endorsed by, or sponsored by** Bitso, GBM, or any other service it integrates with.
 
 ## Why peso-cli
 
-Mexican investors increasingly hold assets across multiple platforms — crypto on Bitso, equities through GBM, cash in neobanks. Each has its own API, auth model, and data shape. For an AI agent trying to answer a simple question like *"what's my total portfolio worth in MXN?"*, that fragmentation is the whole problem.
+Mexican investors increasingly hold assets across multiple platforms: crypto on Bitso, equities through GBM, cash in neobanks. Each has its own API, auth model, and data shape. For an AI agent trying to answer a simple question like *"what's my total portfolio worth in MXN?"*, that fragmentation is the whole problem.
 
-peso-cli solves it the boring way: a unified CLI where every command returns the same JSON envelope, every error is machine-readable, and the same verbs mean the same thing across services. An agent that learns `peso bitso ticker btc` already knows how to call `peso gbm ticker NAFTRAC`.
+peso-cli solves it the boring way: a unified CLI where every command returns the same data format, every error is machine-readable, and the same verbs mean the same thing across services. An agent that learns `peso bitso ticker btc` already knows how to call `peso gbm ticker NAFTRAC`.
 
-- **Agent-first.** Stable JSON output, machine-readable error codes, exit codes that mean what they should.
+- **Agent-first.** Stable output, machine-readable error codes, exit codes that mean what they should.
 - **Standardized verbs.** `ticker`, `positions`, `orders` mean the same thing on every service.
 - **Service-namespaced.** `peso bitso positions`, `peso gbm positions` — the structure scales as services are added.
 - **Public commands need zero setup.** An agent on a fresh machine can run `peso bitso ticker btc` with no auth.
@@ -34,13 +34,22 @@ Every service supported by peso-cli implements the same core verbs. The argument
 | `auth set` | Configure credentials | — | `peso bitso auth set` | `peso gbm auth set` |
 | `auth test` | Verify credentials | Yes | `peso bitso auth test` | `peso gbm auth test` |
 
-Service-specific commands (e.g. `peso bitso orderbook`, `peso gbm dividends`) live alongside the standard verbs but are not guaranteed to exist on every service.
+Service-specific commands (e.g. `peso bitso orderbook`) live alongside the standard verbs but are not guaranteed to exist on every service.
 
 > **Note on `positions`:** On Bitso, positions are simply current asset balances (BTC, ETH, MXN). On GBM, positions are open equity/ETF/fixed-income holdings with cost basis. The response field names are aligned where possible (`symbol`, `quantity`, `available`, `value_mxn`) so agents can compute portfolio totals across services without service-specific code.
 
 ## Quick Start
 
 ```bash
+
+# Install with Prompt (OpenClaw)
+
+Use peso-cli to send me daily report on the price of BTC.
+
+Peso-cli can be found here: https://github.com/sambitcoin/peso-cli
+
+Note:this is required as the repo is not indexed yet)
+
 # Install (macOS / Linux)
 curl -sSL https://raw.githubusercontent.com/sambitcoin/peso-cli/main/install.sh | sh
 
@@ -50,7 +59,7 @@ peso bitso ticker btc -o table
 peso bitso orderbook btc_usdc --depth 5
 
 # Configure credentials (one-time, per service)
-peso bitso auth set --api-key YOUR_KEY --api-secret-stdin < secret.txt
+peso bitso auth set --api-key YOUR_KEY --api-secret YOUR_SECRET
 peso gbm   auth set login
 
 # Authenticated commands — same verbs, different services
@@ -61,7 +70,7 @@ peso bitso order buy btc_usdc --type limit --price 85000 --major 5000
 
 peso gbm positions                                                        # v0.2
 peso gbm orders                                                           # v0.2
-peso gbm order buy NAFTRAC --type limit --price 245.50 --quantity 100     # v0.2
+peso gbm order buy SPY --type limit --price 245.50 --quantity 100     # v0.2
 ```
 
 ## Roadmap
@@ -70,15 +79,13 @@ peso-cli is being built in stages, prioritizing the platforms with the largest M
 
 ### v0.1 — Bitso (current)
 
-Mexico's largest crypto exchange. Crypto and FX trading, balances, order management.
+This was a non-brainer as the API is readily available
+
+Mexico's largest crypto exchange. Crypto balances, prices, send orders, and order management.
 
 ### v0.2 — GBM
 
 Mexico's largest digital broker. Equities, ETFs, mutual funds, fixed income — quotes, positions, order placement, order history.
-
-### v0.3+ — Broader Mexican fintech
-
-Candidates under evaluation: Kuspit, Finamex, CetesDirecto, plus neobank read-only integrations (Albo, Klar) for unified portfolio views.
 
 The selection rule is simple: integrate the platforms Mexican retail investors actually use, in the order of how many of them use it.
 
@@ -230,11 +237,11 @@ $ peso bitso order buy btc_usdc --type limit --price 85000 --major 5000
 {"schema_version":"1.0","service":"bitso","result":{"oid":"abc123","book":"btc_usdc","side":"buy","type":"limit","status":"queued",...}}
 ```
 
-#### Example 2: GBM-only — buy NAFTRAC (v0.2)
+#### Example 2: GBM-only — buy SPY (v0.2)
 
 ```bash
-# 1. Quote NAFTRAC (Mexico's main equity ETF)
-$ peso gbm ticker NAFTRAC | jq '.result.last'
+# 1. Quote SPY (Mexico's main equity ETF)
+$ peso gbm ticker SPY | jq '.result.last'
 "245.50"
 
 # 2. Check MXN cash available on GBM
@@ -245,8 +252,8 @@ $ peso gbm positions | jq '.result.positions[] | select(.symbol=="mxn") | .avail
 $ peso gbm orders | jq '.result.orders | length'
 0
 
-# 4. Validate a 100-share NAFTRAC buy
-$ peso gbm order buy NAFTRAC --type limit --price 245.00 --quantity 100 --validate
+# 4. Validate a 100-share SPY buy
+$ peso gbm order buy SPY --type limit --price 245.00 --quantity 100 --validate
 {"schema_version":"1.0","service":"gbm","result":{"status":"valid","would_send":{"symbol":"NAFTRAC","quantity":100,"price":"245.00","est_total_mxn":"24500.00"}}}
 
 # 5. Place the order
@@ -254,91 +261,20 @@ $ peso gbm order buy NAFTRAC --type limit --price 245.00 --quantity 100
 {"schema_version":"1.0","service":"gbm","result":{"oid":"gbm-7891","symbol":"NAFTRAC","side":"buy","type":"limit","quantity":100,"price":"245.00","status":"queued",...}}
 ```
 
-#### Example 3: Cross-service — total portfolio in MXN (v0.2)
-
-The standardized `positions` shape makes this trivial for an agent:
-
-```bash
-# Sum holdings across all configured services
-$ peso bitso positions | jq '.result.total_mxn'
-"915234.10"
-
-$ peso gbm positions | jq '.result.total_mxn'
-"136170.00"
-
-# Agent computes: 915,234.10 + 136,170.00 = 1,051,404.10 MXN total
-```
-
-A more complete agent script:
-
-```bash
-#!/usr/bin/env bash
-bitso_total=$(peso bitso positions | jq -r '.result.total_mxn')
-gbm_total=$(peso gbm   positions | jq -r '.result.total_mxn')
-echo "Crypto (Bitso):  $bitso_total MXN"
-echo "Brokerage (GBM): $gbm_total MXN"
-echo "Total:           $(echo "$bitso_total + $gbm_total" | bc) MXN"
-```
-
 #### Example 4: Cross-service — rebalance from crypto into NAFTRAC (v0.2)
 
-A natural agent workflow once both services are live:
 
-```bash
-# 1. Sell 0.1 BTC on Bitso for MXN
-$ peso bitso order sell btc_mxn --type market --major 0.1
-{"...","status":"queued",...}
-
-# 2. (User manually withdraws MXN from Bitso to bank, then deposits to GBM —
-#     fiat rails are out of scope for v0.2; tracked for v0.3.)
-
-# 3. Once funds settle on GBM, buy NAFTRAC
-$ peso gbm order buy NAFTRAC --type market --quantity 50
-{"...","status":"queued",...}
-```
 
 > Direct fiat movement between services is not in scope for the MVP. peso-cli reads and trades on each service independently; cash transfers between services remain a manual step (for now — see roadmap v0.3+).
 
-#### Example 5: Cross-service — find your largest positions regardless of service (v0.2)
+## Techstack
 
-```bash
-# Combine positions from both services into one ranked list
-$ ( peso bitso positions; peso gbm positions ) \
-  | jq -s '[.[] | .result.positions[]] | sort_by(.value_mxn | tonumber) | reverse | .[0:5]'
-[
-  { "symbol": "btc",     "quantity": "0.5234", "value_mxn": "765234.10", ... },
-  { "symbol": "NAFTRAC", "quantity": "500",    "value_mxn": "122750.00", ... },
-  { "symbol": "mxn",     "quantity": "150000", "value_mxn": "150000.00", ... },
-  ...
-]
-```
-
-Because both services use the same field names (`symbol`, `quantity`, `value_mxn`), the agent doesn't need service-specific parsing.
-
-#### Example 6: Cross-service — list all open orders everywhere (v0.2)
-
-```bash
-$ ( peso bitso orders; peso gbm orders ) \
-  | jq -s '[.[] | { service: .service, orders: .result.orders }] | .[] | "\(.service): \(.orders | length) open"'
-"bitso: 2 open"
-"gbm: 1 open"
-```
-
-## Build from Source
-
-```bash
-# Prerequisites: GraalVM JDK 21, Gradle 8.x
-git clone https://github.com/sambitcoin/peso-cli.git
-cd peso-cli
-./gradlew nativeCompile
-# Binary at: build/native/nativeCompile/peso
-```
+Built with node.js and compiled with bun into a single executable
 
 ## Distribution
 
-- **Prebuilt binaries:** macOS (arm64, x64), Linux (x64, arm64), Windows (x64) on [GitHub Releases](https://github.com/sambitcoin/peso-cli/releases).
+- **Prebuilt binaries:** macOS (arm64), Linux (x64, arm64), Windows (x64) on [GitHub Releases](https://github.com/sambitcoin/peso-cli/releases).
 - **One-line install:** `curl -sSL https://raw.githubusercontent.com/sambitcoin/peso-cli/main/install.sh | sh`
-- **Homebrew:** `brew install sambitcoin/peso/peso-cli` (coming soon)
 
 Binaries are self-contained GraalVM native-images — no JRE required. ~15 MB compressed.
 
@@ -388,8 +324,6 @@ Public commands never return `auth` errors. If a public command returns `auth`, 
 - **No confirmation prompts in JSON mode.** `peso bitso order buy` submits immediately when `-o json` (the default). Use `--validate` first.
 - **No max-order-size guard.** The CLI won't warn you about spending 100% of your balance.
 - **`--validate` is client-side only.** Bitso REST v3 has no server-side dry-run endpoint. `--validate` checks parameter sanity but does not check balance sufficiency or simulate fills.
-- **No cross-service fiat rails.** peso-cli reads and trades each service independently. Moving cash between Bitso and GBM remains a manual step.
-- **Windows permissions.** Config file permissions are not restricted on Windows in MVP. Keep your API keys safe.
 
 ## Contributing
 
