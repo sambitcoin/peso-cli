@@ -26,7 +26,7 @@ export function registerTickerCommand(program: Command): void {
             category: 'validation',
             code: 'unknown_coin',
             message: (e as Error).message,
-            suggestion: 'Supported coins: btc, eth, sol.',
+            suggestion: 'Use a valid Bitso coin (e.g. btc, eth, sol, xrp, ltc) or a full book (e.g. btc_usd).',
             retryable: false,
             docs_url: '',
           }, isJson);

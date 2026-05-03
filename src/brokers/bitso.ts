@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import { registerTickerCommand } from '../commands/ticker.js';
 import { registerOrderBookCommand } from '../commands/orderbook.js';
-import { registerBalanceCommand } from '../commands/balance.js';
+import { registerPositionsCommand } from '../commands/balance.js';
 import { registerOrderCommand } from '../commands/order.js';
 import { registerAuthCommand } from '../commands/auth.js';
 import { registerQuoteCommand } from '../commands/quote.js';
@@ -16,7 +16,7 @@ export function registerBitsoCommand(program: Command): void {
 
   registerTickerCommand(bitso);
   registerOrderBookCommand(bitso);
-  registerBalanceCommand(bitso);
+  registerPositionsCommand(bitso);
   registerOrderCommand(bitso);
   registerAuthCommand(bitso);
   registerQuoteCommand(bitso);
