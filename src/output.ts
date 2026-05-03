@@ -66,12 +66,12 @@ export const TableOutput = {
     return lines.join('\n') + '\n';
   },
 
-  balance(r: BalanceResult): string {
+  positions(r: BalanceResult): string {
     const lines: string[] = [];
-    lines.push(`  ${pad('Asset', 6)}  ${pad('Total', 14)}  ${pad('Available', 14)}  ${pad('Locked', 14)}`);
-    lines.push(`  ${pad('──────', 6)}  ${pad('──────────────', 14)}  ${pad('──────────────', 14)}  ${pad('──────────────', 14)}`);
+    lines.push(`  ${pad('Asset', 6)}  ${pad('Total', 14)}  ${pad('Available', 14)}  ${pad('Locked', 14)}  ${pad('Pend. Deposit', 14)}  ${pad('Pend. Withdraw', 14)}`);
+    lines.push(`  ${pad('──────', 6)}  ${pad('──────────────', 14)}  ${pad('──────────────', 14)}  ${pad('──────────────', 14)}  ${pad('──────────────', 14)}  ${pad('──────────────', 14)}`);
     r.balances.forEach(b => {
-      lines.push(`  ${pad(b.currency.toUpperCase(), 6)}  ${pad(b.total, 14)}  ${pad(b.available, 14)}  ${pad(b.locked, 14)}`);
+      lines.push(`  ${pad(b.currency.toUpperCase(), 6)}  ${pad(b.total, 14)}  ${pad(b.available, 14)}  ${pad(b.locked, 14)}  ${pad(b.pending_deposit ?? '0', 14)}  ${pad(b.pending_withdrawal ?? '0', 14)}`);
     });
     return lines.join('\n') + '\n';
   },

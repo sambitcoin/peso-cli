@@ -40,8 +40,8 @@ export function registerGbmCommand(program: Command): void {
   // orderbook
   leaf(gbm.command('orderbook [book]').description('View the order book.')).action(ni());
 
-  // balance
-  leaf(gbm.command('balance').description('Show account balances.')).action(ni());
+  // positions
+  leaf(gbm.command('positions').description('Show account positions (balances).')).action(ni());
 
   // order
   const order = gbm.command('order').description('Place or manage orders.');

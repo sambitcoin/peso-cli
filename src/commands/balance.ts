@@ -5,10 +5,10 @@ import { loadCredentials, CredentialMissingError, readSecretFromStdin, readSecre
 import { JsonOutput, TableOutput, printError } from '../output.js';
 import type { BalanceResult, BalanceEntry } from '../types.js';
 
-export function registerBalanceCommand(program: Command): void {
+export function registerPositionsCommand(program: Command): void {
   program
-    .command('balance')
-    .description('Show account balances for all assets.')
+    .command('positions')
+    .description('Show account positions (balances) for all assets.')
     .option('--api-key <key>', 'Bitso API key.')
     .option('--api-secret-stdin', 'Read API secret from stdin.')
     .option('--api-secret-file <path>', 'Path to file containing the API secret.')
@@ -48,6 +48,8 @@ export function registerBalanceCommand(program: Command): void {
                 total: String(obj['total'] ?? '0'),
                 available: String(obj['available'] ?? '0'),
                 locked: String(obj['locked'] ?? '0'),
+                ...(obj['pending_deposit'] != null ? { pending_deposit: String(obj['pending_deposit']) } : {}),
+                ...(obj['pending_withdrawal'] != null ? { pending_withdrawal: String(obj['pending_withdrawal']) } : {}),
               };
             })
           : [];
@@ -57,7 +59,7 @@ export function registerBalanceCommand(program: Command): void {
         if (isJson) {
           console.log(JsonOutput.success(result));
         } else {
-          console.log(TableOutput.balance(result));
+          console.log(TableOutput.positions(result));
         }
 
       } catch (e) {
@@ -66,7 +68,7 @@ export function registerBalanceCommand(program: Command): void {
             category: 'auth',
             code: 'missing_credentials',
             message: e.message,
-            suggestion: "Use 'bitso auth set --api-key <key> --api-secret-stdin' to configure.",
+            suggestion: "Use 'peso bitso auth set --api-key <key> --api-secret-stdin' to configure.",
             retryable: false,
             docs_url: '',
           }, isJson);

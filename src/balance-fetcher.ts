@@ -2,16 +2,16 @@ import { AuthenticatedHttpClient } from './http-auth.js';
 import { loadCredentials, CredentialMissingError, readSecretFromStdin, readSecretFromFile } from './credential-store.js';
 import type { BalanceEntry } from './types.js';
 
-export type BrokerBalanceResult =
+export type BrokerPositionsResult =
   | { broker: string; status: 'ok'; balances: BalanceEntry[] }
   | { broker: string; status: 'unavailable'; reason: string };
 
-export async function fetchBitsoBalance(opts: {
+export async function fetchBitsoPositions(opts: {
   apiKey?: string;
   apiSecretStdin?: boolean;
   apiSecretFile?: string;
   apiUrl: string;
-}): Promise<BrokerBalanceResult> {
+}): Promise<BrokerPositionsResult> {
   try {
     let secretBuf: Buffer | undefined;
     if (opts.apiSecretStdin) secretBuf = await readSecretFromStdin();
@@ -31,6 +31,8 @@ export async function fetchBitsoBalance(opts: {
             total: String(o['total'] ?? '0'),
             available: String(o['available'] ?? '0'),
             locked: String(o['locked'] ?? '0'),
+            ...(o['pending_deposit'] != null ? { pending_deposit: String(o['pending_deposit']) } : {}),
+            ...(o['pending_withdrawal'] != null ? { pending_withdrawal: String(o['pending_withdrawal']) } : {}),
           };
         })
       : [];
@@ -44,6 +46,6 @@ export async function fetchBitsoBalance(opts: {
   }
 }
 
-export async function fetchGbmBalance(): Promise<BrokerBalanceResult> {
+export async function fetchGbmPositions(): Promise<BrokerPositionsResult> {
   return { broker: 'gbm', status: 'unavailable', reason: 'not implemented' };
 }

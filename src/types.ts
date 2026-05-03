@@ -59,6 +59,8 @@ export interface BalanceEntry {
   total: string;
   available: string;
   locked: string;
+  pending_deposit?: string;
+  pending_withdrawal?: string;
 }
 
 export interface BalanceResult {
